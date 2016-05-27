@@ -1,7 +1,7 @@
 ## AxionVPNFramework
 
 
-AxionVPNFramework is a framework of course that is shared between the new iOS and OS X AxionVPN applications. 
+AxionVPNFramework is a framework that is shared between the new iOS and OS X AxionVPN applications. 
 
 ## Structure
 
