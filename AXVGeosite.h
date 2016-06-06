@@ -7,10 +7,13 @@
 //
 
 #import "AXVObject.h"
+#import <MapKit/MapKit.h>
 
 @interface AXVGeosite : AXVObject
 
 @property (nonatomic, retain) NSString *geositeId;
 @property (nonatomic, retain) NSString *geoArea;
+@property CLLocationCoordinate2D coordinateLocation;
+@property NSString *imagePath;
 
 @end

@@ -12,6 +12,7 @@
 static NSString *const kAXVServiceManagerUserNameKey = @"kAXVServiceManagerUserNameKey";
 static NSString *const kAXVServiceManagerPasswordKey = @"kAXVServiceManagerPasswordKey";
 static NSString *const kAXVServiceManagerServiceId = @"com.axionvpn.AxionVPN";
+
 @implementation AXVUserManager
 
 +(instancetype)sharedInstance
@@ -44,7 +45,8 @@ static NSString *const kAXVServiceManagerServiceId = @"com.axionvpn.AxionVPN";
         if (userName != nil &&
             password != nil)
         {
-            _currentUser = [AXVUser userWithUserName:userName andPassword:password];
+            _currentUser = [AXVUser userWithUserName:userName
+                                         andPassword:password];
         }
     }
     
