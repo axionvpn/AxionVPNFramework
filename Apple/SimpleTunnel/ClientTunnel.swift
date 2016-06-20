@@ -43,10 +43,13 @@ public class ClientTunnel: Tunnel {
 	// MARK: Interface
 
 	/// Start the TCP connection to the tunnel server.
-	public func startTunnel(provider: NETunnelProvider) -> SimpleTunnelError? {
+	@objc public func startTunnel(provider: NETunnelProvider) -> NSError? {
 
 		guard let serverAddress = provider.protocolConfiguration.serverAddress else {
-			return .BadConfiguration
+            
+            let error = NSError.init(domain: "com.AxionVPN", code: SimpleTunnelError.BadConfiguration.rawValue, userInfo: nil)
+
+			return error
 		}
 
 		let endpoint: NWEndpoint
@@ -58,8 +61,10 @@ public class ClientTunnel: Tunnel {
 			let portString = serverAddress.substringWithRange(colonRange.startIndex.successor()..<serverAddress.endIndex)
 
 			guard !hostname.isEmpty && !portString.isEmpty else {
-				return .BadConfiguration
-			}
+                let error = NSError.init(domain: "com.AxionVPN", code: SimpleTunnelError.BadConfiguration.rawValue, userInfo: nil)
+                
+                return error
+            }
 
 			endpoint = NWHostEndpoint(hostname:hostname, port:portString)
 		}
@@ -69,13 +74,30 @@ public class ClientTunnel: Tunnel {
 		}
 
 		// Kick off the connection to the server.
-		connection = provider.createTCPConnectionToEndpoint(endpoint, enableTLS:false, TLSParameters:nil, delegate:nil)
+		connection = provider.createTCPConnectionToEndpoint(endpoint, enableTLS:true, TLSParameters:nil, delegate:nil)
 
 		// Register for notificationes when the connection status changes.
 		connection!.addObserver(self, forKeyPath: "state", options: .Initial, context: &connection)
 
 		return nil
 	}
+    
+    public func shouldProvideIdentityForConnection(connection: NWTCPConnection) -> Bool {
+        return true
+    }
+    
+    public func provideIdentityForConnection(connection: NWTCPConnection,
+                                             completionHandler completion: (SecIdentity,
+        [AnyObject]) -> Void) {
+        
+        let instanceOfCustomObject: IdentityTrust = IdentityTrust()
+        instanceOfCustomObject.populateIdentityTrustAndCertificate()
+        let myIdentity = instanceOfCustomObject.getMyIdentity().takeRetainedValue()
+        let myTrust = instanceOfCustomObject.getMyTrust()   // I am not using this
+        let myReturnedCertificate = instanceOfCustomObject.getMyReturnedCertificate()  // I am not using this
+        completion(myIdentity, []) // The certificateChain argument is optional, and is an array of one or more SecCertificateRef objects. If the certificate chain is not set, the leaf certificate will be extracted from the SecIdentityRef object and will be used for authentication.
+    }  
+
 
 	/// Close the tunnel.
 	public func closeTunnelWithError(error: NSError?) {
@@ -85,8 +107,10 @@ public class ClientTunnel: Tunnel {
 
 	/// Read a SimpleTunnel packet from the tunnel connection.
 	func readNextPacket() {
-		guard let targetConnection = connection else {
-			closeTunnelWithError(SimpleTunnelError.BadConnection as NSError)
+		guard let targetConnection = connection else
+        {
+            let error = NSError.init(domain: "com.AxionVPN", code: SimpleTunnelError.BadConnection.rawValue, userInfo: nil)
+			closeTunnelWithError(error)
 			return
 		}
 
@@ -107,7 +131,9 @@ public class ClientTunnel: Tunnel {
 
 			guard lengthData.length == sizeof(UInt32) else {
 				simpleTunnelLog("Length data length (\(lengthData.length)) != sizeof(UInt32) (\(sizeof(UInt32))")
-				self.closeTunnelWithError(SimpleTunnelError.InternalError as NSError)
+                let error = NSError.init(domain: "com.AxionVPN", code: SimpleTunnelError.InternalError.rawValue, userInfo: nil)
+
+				self.closeTunnelWithError(error)
 				return
 			}
 
@@ -116,7 +142,9 @@ public class ClientTunnel: Tunnel {
 
 			if totalLength > UInt32(Tunnel.maximumMessageSize) {
 				simpleTunnelLog("Got a length that is too big: \(totalLength)")
-				self.closeTunnelWithError(SimpleTunnelError.InternalError as NSError)
+                
+                let error = NSError.init(domain: "com.AxionVPN", code: SimpleTunnelError.InternalError.rawValue, userInfo: nil)
+				self.closeTunnelWithError(error)
 				return
 			}
 
@@ -138,7 +166,9 @@ public class ClientTunnel: Tunnel {
 
 				guard payloadData.length == Int(totalLength) else {
 					simpleTunnelLog("Payload data length (\(payloadData.length)) != payload length (\(totalLength)")
-					self.closeTunnelWithError(SimpleTunnelError.InternalError as NSError)
+                    
+                    let error = NSError.init(domain: "com.AxionVPN", code: SimpleTunnelError.InternalError.rawValue, userInfo: nil)
+					self.closeTunnelWithError(error as NSError)
 					return
 				}
 
@@ -152,7 +182,10 @@ public class ClientTunnel: Tunnel {
 	/// Send a message to the tunnel server.
 	public func sendMessage(messageProperties: [String: AnyObject], completionHandler: (NSError?) -> Void) {
 		guard let messageData = serializeMessage(messageProperties) else {
-			completionHandler(SimpleTunnelError.InternalError as NSError)
+            
+            let error = NSError.init(domain: "com.AxionVPN", code: SimpleTunnelError.InternalError.rawValue, userInfo: nil)
+
+			completionHandler(error)
 			return
 		}
 

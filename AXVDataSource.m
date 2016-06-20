@@ -79,10 +79,10 @@ static NSString *const kAXVDataSourceGeositeIdKey = @"id";
                  success:^(NSURLSessionDataTask * _Nonnull task, NSDictionary *jsonDictionary)
      {
          if ([jsonDictionary objectForKey:@"conf"] != nil)
-         {
-             NSLog(@"Got Cert for %@",geosite.geoArea);
-             
+         {             
              AXVVPNConfiguration *config = [[AXVVPNConfiguration alloc] initWithDictionary:jsonDictionary];
+             
+             NSLog(@"address = %@, port = %@",config.vpnServer,config.port);
              
              givenCompletionBlock(nil,config);
          }

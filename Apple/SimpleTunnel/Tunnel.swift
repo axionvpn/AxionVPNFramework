@@ -66,7 +66,7 @@ public enum AppProxyFlowKind: Int {
 }
 
 /// The tunnel delegate protocol.
-public protocol TunnelDelegate: class {
+@objc public protocol TunnelDelegate: class {
 	func tunnelDidOpen(targetTunnel: Tunnel)
 	func tunnelDidClose(targetTunnel: Tunnel)
 	func tunnelDidSendConfiguration(targetTunnel: Tunnel, configuration: [String: AnyObject])

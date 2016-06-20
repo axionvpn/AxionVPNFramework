@@ -10,6 +10,8 @@
 
 @interface AXVObject : NSObject
 
+@property (nonatomic, retain) NSDictionary *dictionaryRepresentation;
+
 -(instancetype)initWithDictionary:(NSDictionary *)dictionary;
 
 @end

@@ -28,6 +28,7 @@ static NSString *const kAXVVPNConfigurationConfigKey = @"conf";
             {
                 NSString *vpnServerString = [string stringByReplacingOccurrencesOfString:@"remote vpn-"
                                                                               withString:@""];
+                
                 [self setVpnServer:vpnServerString];
             }
             else if ([string hasPrefix:@"port"] == YES)
@@ -67,6 +68,20 @@ static NSString *const kAXVVPNConfigurationConfigKey = @"conf";
     }
     
     return self;
+}
+
+-(NSString *)description
+{
+    NSString *string = [self.dictionaryRepresentation objectForKey:kAXVVPNConfigurationConfigKey];
+    
+    NSArray *stringParts = [string componentsSeparatedByString:@"\n"];
+    
+    for (NSString *string in stringParts)
+    {
+        NSLog(@"%@",string);
+    }
+    
+    return @"";
 }
 
 -(NSString *)getCertStringWithIndexOfStartingKey:(NSInteger)startingKeyIndex fromStringsArray:(NSArray <NSString *> *)stringsArray

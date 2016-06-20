@@ -10,10 +10,17 @@ import Foundation
 import Darwin
 
 /// SimpleTunnel errors
-public enum SimpleTunnelError: ErrorType {
+//public enum SimpleTunnelError: ErrorType {
+//    case BadConfiguration
+//    case BadConnection
+//	case InternalError
+//}
+
+@objc public enum SimpleTunnelError: NSInteger
+{
     case BadConfiguration
     case BadConnection
-	case InternalError
+    case InternalError
 }
 
 /// A queue of blobs of data

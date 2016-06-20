@@ -16,7 +16,7 @@
     
     if (self != nil)
     {
-        
+        self.dictionaryRepresentation = dictionary;
     }
     
     return self;
