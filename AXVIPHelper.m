@@ -7,47 +7,48 @@
 //
 
 #import "AXVIPHelper.h"
-#include <ifaddrs.h>
-#include <arpa/inet.h>
+#import "AFNetworking.h"
+
+@interface AXVIPHelper ()
+{
+    AFHTTPSessionManager *sessionManager;
+}
+
+@end
 
 @implementation AXVIPHelper
 
-+(NSString *)getIPAddress
+-(instancetype)init
 {
+    self = [super init];
     
-    NSString *address = @"error";
-    
-    struct ifaddrs *interfaces = NULL;
-    struct ifaddrs *temp_addr = NULL;
-    
-    int success = getifaddrs(&interfaces);
-    
-    if (success == 0)
+    if (self != nil)
     {
-        // Loop through linked list of interfaces
-        temp_addr = interfaces;
-        
-        while (temp_addr != NULL)
-        {
-            if (temp_addr->ifa_addr->sa_family == AF_INET)
-            {
-                // Check if interface is en0 which is the wifi connection on the iPhone
-                if([[NSString stringWithUTF8String:temp_addr->ifa_name] isEqualToString:@"en0"] == YES)
-                {
-                    // Get NSString from C String
-                    address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
-                }
-                
-            }
-            
-            temp_addr = temp_addr->ifa_next;
-        }
+        sessionManager = [[AFHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString:@"https://ipof.in/"]];
+        sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+        sessionManager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/plain"];
     }
     
-    // Free memory
-    freeifaddrs(interfaces);
-    
-    return address;
+    return self;
+}
+
+-(void)getIPAddressWithCompletionBlock:(kAXVIPHelperGetIPAddressCompletionBlock)completionBlock
+{
+    [sessionManager GET:@"txt"
+             parameters:nil
+               progress:nil
+                success:^(NSURLSessionDataTask * _Nonnull task, NSData *stringData)
+     {
+         NSString *ipAddress = [[NSString alloc] initWithData:stringData
+                                                     encoding:NSUTF8StringEncoding];
+         
+         completionBlock(nil,ipAddress);
+     }
+                failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error)
+     {
+         completionBlock(error,nil);
+     }];
+
 }
 
 @end

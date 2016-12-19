@@ -104,4 +104,31 @@ static NSString *const kAXVVPNConfigurationConfigKey = @"conf";
     return certString;
 }
 
+-(NSURL *)writeConfigurationFileToDocumentsDirectory
+{
+    NSString *configurationFileString = [self.dictionaryRepresentation objectForKey:kAXVVPNConfigurationConfigKey];
+
+    NSURL *documentsDirectoryURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    
+    NSURL *fileURL = [documentsDirectoryURL URLByAppendingPathComponent:@"config.ovpn"];
+    
+    NSError *writeStringToFileError = nil;
+    
+    [configurationFileString writeToURL:fileURL
+                             atomically:YES
+                               encoding:NSUTF8StringEncoding
+                                  error:&writeStringToFileError];
+    
+    if (writeStringToFileError != nil)
+    {
+        NSLog(@"Error writing config to file: %@",writeStringToFileError);
+        
+        return nil;
+    }
+    else
+    {
+        return fileURL;
+    }
+}
+
 @end

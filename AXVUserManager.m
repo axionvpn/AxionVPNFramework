@@ -35,12 +35,25 @@ static NSString *const kAXVServiceManagerServiceId = @"com.axionvpn.AxionVPN";
     
     if (self != nil)
     {
+        NSError *keychainError = nil;
+        
         NSString *userName = [STKeychain getPasswordForUsername:kAXVServiceManagerUserNameKey
                                                  andServiceName:kAXVServiceManagerServiceId
-                                                          error:nil];
+                                                          error:&keychainError];
+        
+        if (keychainError != nil)
+        {
+            NSLog(@"Username error: %@",keychainError);
+        }
+        
         NSString *password = [STKeychain getPasswordForUsername:kAXVServiceManagerPasswordKey
                                                  andServiceName:kAXVServiceManagerServiceId
-                                                          error:nil];
+                                                          error:&keychainError];
+        
+        if (keychainError != nil)
+        {
+            NSLog(@"Username error: %@",keychainError);
+        }
         
         if (userName != nil &&
             password != nil)
@@ -57,16 +70,29 @@ static NSString *const kAXVServiceManagerServiceId = @"com.axionvpn.AxionVPN";
 {
     _currentUser = user;
     
+    NSError *keychainError = nil;
+    
     [STKeychain storeUsername:kAXVServiceManagerUserNameKey
                   andPassword:user.userName
                forServiceName:kAXVServiceManagerServiceId
                updateExisting:YES
-                        error:nil];
+                        error:&keychainError];
+    
+    if (keychainError != nil)
+    {
+        NSLog(@"Username error: %@",keychainError);
+    }
+    
     [STKeychain storeUsername:kAXVServiceManagerPasswordKey
                   andPassword:user.password
                forServiceName:kAXVServiceManagerServiceId
                updateExisting:YES
-                        error:nil];
+                        error:&keychainError];
+    
+    if (keychainError != nil)
+    {
+        NSLog(@"apssword error: %@",keychainError);
+    }
 }
 
 -(void)logOut

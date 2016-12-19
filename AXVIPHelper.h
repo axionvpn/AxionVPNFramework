@@ -8,8 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+
+typedef void(^kAXVIPHelperGetIPAddressCompletionBlock)(NSError *error, NSString *ipAddress);
 @interface AXVIPHelper : NSObject
 
-+(NSString *)getIPAddress;
+-(void)getIPAddressWithCompletionBlock:(kAXVIPHelperGetIPAddressCompletionBlock)completionBlock;
 
 @end

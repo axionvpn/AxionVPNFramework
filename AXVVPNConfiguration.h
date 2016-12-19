@@ -17,4 +17,6 @@
 @property (nonatomic, retain) NSString *privateKey;
 @property (nonatomic, retain) NSString *staticKey;
 
+-(NSURL *)writeConfigurationFileToDocumentsDirectory;
+
 @end

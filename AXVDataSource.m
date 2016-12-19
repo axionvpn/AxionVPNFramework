@@ -79,11 +79,24 @@ static NSString *const kAXVDataSourceGeositeIdKey = @"id";
                  success:^(NSURLSessionDataTask * _Nonnull task, NSDictionary *jsonDictionary)
      {
          if ([jsonDictionary objectForKey:@"conf"] != nil)
-         {             
+         {
+             NSString *configFileString = [jsonDictionary objectForKey:@"conf"];
+             
+             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+             NSString *documentsDirectory = [paths objectAtIndex:0];
+             NSString *path = [documentsDirectory stringByAppendingPathComponent:@"configuration.ovpn"];
+             
+             NSError *error = nil;
+             
+             [configFileString writeToURL:[NSURL fileURLWithPath:path] atomically:YES encoding:NSUTF8StringEncoding error:&error];
+             
+             if (error != nil)
+             {
+                 NSLog(@"error saving ovpn file: %@",error);
+             }
+             
              AXVVPNConfiguration *config = [[AXVVPNConfiguration alloc] initWithDictionary:jsonDictionary];
-             
-             NSLog(@"address = %@, port = %@",config.vpnServer,config.port);
-             
+                          
              givenCompletionBlock(nil,config);
          }
          else
